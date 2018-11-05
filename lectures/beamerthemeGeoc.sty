@@ -1,0 +1,37 @@
+% Copyright 2011 by Julian Pfeifle <julian.pfeifle@upc.edu>
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Public License.
+%
+% See the file doc/licenses/LICENSE for more details.
+
+\mode<presentation>
+
+\newif\ifbeamer@secheader
+\beamer@secheaderfalse
+
+\DeclareOptionBeamer{secheader}{\beamer@secheadertrue}
+\ProcessOptionsBeamer
+
+\usecolortheme{rose}
+\useinnertheme{default}% [shadow]{rounded}
+\usecolortheme{wolverine}
+\useoutertheme{infolines}
+
+\setbeamercolor{alerted text}{fg=red}
+\setbeamercolor*{palette primary}{fg=white,bg=red!80!black}
+\setbeamercolor*{palette secondary}{fg=white,bg=red!80!black}
+\setbeamercolor*{palette tertiary}{fg=white,bg=red!80!black}
+\setbeamercolor*{titlelike}{parent=palette primary}
+\setbeamercolor{frametitle}{bg=red!80!black}
+
+
+\setbeamersize{text margin left=1em,text margin right=1em}
+\setbeamertemplate{navigation symbols}{}
+
+\ifbeamer@secheader\else\setbeamertemplate{headline}[default]\fi
+
+\mode
+<all>

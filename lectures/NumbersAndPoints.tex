@@ -1,0 +1,359 @@
+\documentclass{beamer}
+
+%\includeonlyframes{current}
+
+\mode<presentation>
+{
+  \usetheme{Geoc}
+  \setbeamercovered{invisible}
+}
+
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{bbm}
+\usepackage{tikz}
+\usepackage{colortbl}
+\usepackage{oldstyle}
+\usepackage{fancyvrb}
+
+\newcommand{\smalldate}[1]{{\footnotesize\alert{[{\oldstyle{#1}}]}}}
+%\newcommand{\smalldate}[1]{{#1}}
+\newcommand{\angbrack}[1]{{$\langle${\color{green}#1}$\rangle$}}
+\newcommand{\NN}{\mathbbm{N}}
+\newcommand{\ZZ}{\mathbbm{Z}}
+\newcommand{\QQ}{\mathbbm{Q}}
+\newcommand{\RR}{\mathbbm{R}}
+\newcommand{\CC}{\mathbbm{C}}
+\newcommand{\HH}{\mathbbm{H}}
+
+\setbeamercolor{math text}{fg=blue}
+\newcommand{\bluetext}[1]{\mbox{\color{blue}#1}}
+\newcommand{\yellowtext}[1]{\mbox{\color{yellow}#1}}
+\newcommand{\greentext}[1]{\mbox{\color{green!50!black}#1}}
+
+\graphicspath{{graphics/}}
+
+
+
+\title{Numbers and Points}
+
+\subtitle
+{Overview} % (optional)
+
+\author
+{Julian Pfeifle}
+
+\institute[UPC]
+{
+  Dept. Matem\`atica Aplicada II\\
+  Universitat Polit\`ecnica de Catalunya
+}
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+ \pgfdeclareimage[height=0.37cm]{university-logo}{graphics/logo-upc}
+ \pgfdeclareimage[height=0.8cm]{university-logo-big}{graphics/logo-upc}
+
+\date[\raisebox{-.12cm}{\pgfuseimage{university-logo}}\quad 2018]%
+{\raisebox{-.24cm}{\pgfuseimage{university-logo-big}}\qquad Computational
+  Geometry\quad 2018}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}[label=current]
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{Computational Geometry is about \dots \yellowtext{Computing}}
+
+\dots and \emph{computing} means: \alert{Algorithms} work on
+\alert{numbers}.
+
+\bigskip
+\begin{block}{What is a number?}
+\centering\small
+  \begin{tabular}[c]{rp{6cm}r}
+    $\NN, \ZZ$ & \texttt{int, long int, long long int}
+    & $-9.2\cdot 10^{18}\dots 9.2\cdot 10^{18}$ 
+    \\
+    & or work with arbitrary precision (slower) & \texttt{gmplib.org}
+    \\[2ex]
+    $\QQ$ & $\{(n,d):n\in\ZZ, d\in\NN_{>0}\}/\sim$, \newline where
+    $(n,d)\sim(n',d')$ iff $nd'=n'd$ & \texttt{gmplib.org}
+    \\[4ex]
+    $\RR$ & \bluetext{algebraic} numbers ok ($\sqrt{2}$, $\sqrt[4]{3}$),\newline
+    \bluetext{transcendental} ones not ($\pi$, $e$) &
+    \texttt{cgal.org}, \texttt{mpfr.org} 
+    \\[4ex]
+    $\CC, \HH$ & pairs or quadruples of reals & \texttt{\#include <complex>}
+  \end{tabular}
+\end{block}
+
+\bigskip
+\begin{block}<2>{How much space does a number occupy on your hard disk?}
+  Roughly $\log_2 n$ bits. \newline ($5\cdot10^{12}$ digits of $\pi$
+  occupy $8.32$ TB as \texttt{.txt}, $3.8$~TB compressed)
+\end{block}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Computational Geometry is about \dots \yellowtext{Geometry}}
+
+  \begin{center}
+    \includegraphics<1>[width=.8\linewidth]{homog1}
+    \includegraphics<2->[width=.8\linewidth]{homog2}
+  \end{center}
+
+  \begin{block}{Homogeneous coordinates for points in the plane}
+    \begin{itemize}
+    \item \alert{Embed} $\RR^2$ at height $1$ into $\RR^3$: $(x,y)\mapsto(x:y:1)$
+    \item<2-> \alert{Identify} points on a ray through the origin:
+
+      $(x:y:1)\sim(\lambda x: \lambda y : \lambda)$, for any
+      $\lambda>0$
+    \item<3-> \greentext{Subtlety:} $\lambda$%
+      \only<3>{${}\boldsymbol{\alert{>}}{}$}%
+      \only<4>{${}\boldsymbol{\alert{\ne}}{}$}$0$ makes
+      \greentext{\onslide<3>{oriented} projective geometry
+        \onslide<3>{\alert{(we use this)}}} 
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Computational Geometry is about \dots \yellowtext{Geometry}}
+
+  \begin{center}
+    \includegraphics<1>[width=.8\linewidth]{homog3}
+    \includegraphics<2>[width=.8\linewidth]{homog4}
+    \includegraphics<3>[width=.8\linewidth]{homog5}
+    \includegraphics<4>[width=.8\linewidth]{homog6}
+    \includegraphics<5->[width=.8\linewidth]{homog7}
+  \end{center}
+
+  \begin{block}{What happens if the last coordinate is zero?}
+    \onslide<5->{These vectors correspond to \alert{points at infinity}.}
+
+    \onslide<6->{The only meaningless vector is $(0,0,0)$.}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Operating with homogeneous coordinates}
+
+  \begin{description}
+  \item[Homogeneous coordinates for \alert{points}:]
+    $$(x,y)\quad\longleftrightarrow\quad(x:y:1)$$
+  \item[Homogeneous coordinates for \alert{lines}:]
+    $$ax+by+c=0\quad\longleftrightarrow\quad(a:b:c)$$
+  \end{description}
+
+  \begin{block}<2->{Incidence relationships}
+    When does $p=(x:y:1)$ lie on $\ell=(a:b:c)$?
+
+    \medskip
+    \alert{Answer:} When $ax+by+c =
+    \big\langle(a,b,c),(x,y,1)\big\rangle = 0$.
+    \qquad\onslide<3>{$\boldsymbol{\alert{p\perp\ell}}$}
+  \end{block}
+  
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Operating with homogeneous coordinates: \yellowtext{lines}}
+
+  \begin{block}{The line $\ell$ through points $p_1$ and $p_2$}
+    \begin{itemize}
+    \item $p_1$ lies on $\ell$: \qquad $p_1\perp\ell$
+    \item $p_2$ lies on $\ell$: \qquad $p_2\perp\ell$
+    \item<2-> \alert{Therefore:} $\ell = \lambda \cdot
+      \boldsymbol{\alert{p_1\times p_2}}$  \quad (the cross-product of
+      vectors in $\RR^3$) 
+    \end{itemize}
+  \end{block}
+
+  \begin{example}<3->[\small The line $\ell$ through $(1,2)=(1:2:1)$ and $(3,-4)=(3:-4:1)$]
+    $$\ell = (1,2,1)\times(3,-4,1) = (6:2:-10) \sim (3:1:-5).$$
+
+    This is correct, because both points satisfy $3x+y-5 = 0$.
+  \end{example}
+
+  \begin{example}<4->[\small The $x$-axis]
+    $y=0
+    \quad\longleftrightarrow\quad 
+    \alert{0}\cdot x + \alert{1}\cdot y + \alert{0} = 0
+    \quad\longleftrightarrow\quad 
+    (\alert{0}:\alert{1}:\alert{0})$
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Operating with homogeneous coordinates: \yellowtext{points}}
+
+  \begin{block}{The point $q$ on lines $\ell_1$ and $\ell_2$}
+    \begin{itemize}
+    \item $q$ lies on $\ell_1$: \qquad $q\perp\ell_1$
+    \item $q$ lies on $\ell_2$: \qquad $q\perp\ell_2$
+    \item<2-> \alert{Therefore:} $q = \lambda \cdot
+      \boldsymbol{\alert{\ell_1\times \ell_2}}$  \quad (the cross-product of
+      vectors in $\RR^3$) 
+    \end{itemize}
+  \end{block}
+
+  \begin{example}<3->[\small The point $q$ on $\ell_1=(3:1:-5)$ and
+    $\ell_2=(0:1:0)$] 
+    $$q = (3,1,-5)\times(0,1,0) = (5:0:3) \sim (\tfrac{5}{3}:0:1).$$
+
+    This is correct, because this point lies on both lines.
+
+    \medskip
+    \onslide<4->{\alert{Watch out:} Choose the order of the factors in
+      $p\times q$ so that the last coordinate is \alert{nonnegative}}.
+  \end{example}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Operating with homogeneous coordinates: \newline\yellowtext{special cases}}
+  
+  \begin{block}{Where do parallel lines intersect?}
+    We do an example with
+    $y=0$ and $y=-2$:
+    
+    \onslide<2->{$(0:1:0)\times(0:1:2) = (2:0:\alert{0})$: this is a point
+      \alert{at infinity}. }
+  \end{block}
+
+  \begin{block}<3->{What happens if $\ell_1=\ell_2$?}
+    
+    \onslide<4->{$\ell_1\times\ell_2 = \ell_1\times\ell_1 = (0,0,0)$,
+      the only vector that has no meaning. }
+    
+    \onslide<5->{\ \hfill\greentext{\emph{The
+          \alert{only} way to get $(0,0,0)$ is 
+        to intersect two equal lines}},
+ 
+\ \hfill      \greentext{\emph{or to calculate the line
+        through two equal points.}}}
+  \end{block}
+
+  \begin{block}<6->{What is the line through two points at infinity?}
+    \onslide<7->{
+      $(x_1:y_1:0)\times(x_2:y_2:0) = (0:0:x_1y_2-x_2y_1)\sim(0:0:1)$,
+
+      \greentext{the line at infinity}.
+    }
+
+    \onslide<8->{(Unless the points coincide (are proportional);
+      then you get $(0,0,0)$.)}
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}[t,fragile]
+  \frametitle{Computational Geometry is about \dots \yellowtext{algorithms \& coding}}
+
+  Let's intersect lines and join points, first in
+  \greentext{homogeneous coordinates}.
+
+\medskip
+  \begin{Verbatim}[formatcom=\color{blue},commandchars=\\\{\},fontsize=\scriptsize,xleftmargin=30pt]
+\alert{void} \greentext{intersect_lines}(\alert{const} vec_t\alert{&} l1, \alert{const} vec_t\alert{&} l2, \alert{vec_t&} p)
+\{
+   cross_product(l1, l2, p);
+\}
+\alert{void} \greentext{join_points}(\alert{const} vec_t\alert{&} p1, \alert{const} vec_t\alert{&} p2, \alert{vec_t&} l)
+\{
+   cross_product(p1, p2, l);
+\}
+void \greentext{cross_product}(\alert{const} vec_t\alert{&} l1, \alert{const} vec_t\alert{&} l2, \alert{vec_t&} p)
+\{
+   p[0] =  l1[1]*l2[2] - l1[2]*l2[1];
+   p[1] = -l1[0]*l2[2] + l1[2]*l2[0];
+   p[2] =  l1[0]*l2[1] - l1[1]*l2[0];
+\}
+  \end{Verbatim}
+
+  \begin{itemize}
+  \item This code is \greentext{\alert<2>{correct}, \alert<3>{efficient}, and
+      \alert<4->{robust}}.
+
+    \qquad
+    \begin{overprint}\small
+      \only<2>{\alert{It calculates exactly what it should.}}
+      \only<3>{\alert{No extraneous copying (\&); reuse of code}}
+      \only<4>{\alert{No influence of rounding errors}}
+      \only<5>{\alert{It handles all cases, even degenerate ones.}}
+    \end{overprint}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[t,label=current,fragile]
+  \frametitle{Computational Geometry is about \dots \yellowtext{algorithms \& coding}}
+
+  Now let's intersect lines in \greentext{Cartesian coordinates}.
+
+  A line is now $y=kx+d$, stored as a vector $(k,d)$.
+
+  \begin{Verbatim}[formatcom=\color{blue},commandchars=\\\{\},fontsize=\scriptsize,xleftmargin=30pt]
+\alert{bool} \greentext{intersect_lines}(const vec_t& l1, const vec_t& l2, vec_t& p) \{
+   if (l1[0]\textbf{\alert{==}}l2[0]) \{
+      if (l1[1]\textbf{\alert{==}}l2[1]) \{
+         return COINCIDENT_LINES;
+      \}
+      return PARALLEL_LINES;
+   \}
+   p[0] = (l2[1]-l1[1])\textbf{\alert{/}}(l1[0]-l2[0]);
+   p[1] = l1[0]*p[0] + l1[1];
+\}
+  \end{Verbatim}
+  
+  \begin{itemize}
+  \item This code is \greentext{
+      \alert<2>{somewhat efficient}, \alert<3>{not robust}, and
+    \alert<4->{\emph{not even correct}}}.
+
+    \begin{overprint}\small
+      \only<1>{\ }
+      \only<2>{\alert{Again, no copying; \quad BUT:\quad no reuse of code for \texttt{join\_points}}}
+      \only<3>{\alert{It's unstable numerically (==, /)}---say
+        \bluetext{\texttt{if(fabs(l1[0]-l2[0])<EPS)}}}
+      \only<4>{\alert{It doesn't handle parallel lines, but that's
+          Euclidean geometry's fault.}}
+      \only<5->{But it \alert{IS the code's fault} that it doesn't handle
+        vertical lines! Need:}
+      \begin{onlyenv}<5>
+\begin{Verbatim}[formatcom=\color{blue},commandchars=\\\{\},fontsize=\scriptsize,xleftmargin=30pt]
+class \greentext{line} \{
+  bool \greentext{is_vertical};
+  vec_t \greentext{k_and_d};
+\};          
+\end{Verbatim}
+\end{onlyenv}
+\end{overprint}
+
+  \item<6-> It's much harder to get right, because of \alert{more
+      special cases}. 
+  \item<6-> It needs an \alert{extra variable}, the boolean return value.
+  \end{itemize}
+\end{frame}
+
+\end{document}
+
+
